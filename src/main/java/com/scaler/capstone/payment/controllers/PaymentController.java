@@ -3,6 +3,7 @@ package com.scaler.capstone.payment.controllers;
 import com.razorpay.RazorpayException;
 import com.scaler.capstone.payment.dtos.PaymentCallbackRequestDTO;
 import com.scaler.capstone.payment.dtos.PaymentDTO;
+import com.scaler.capstone.payment.exceptions.InvalidRefundException;
 import com.scaler.capstone.payment.exceptions.NotFoundException;
 import com.scaler.capstone.payment.models.Payment;
 import com.scaler.capstone.payment.services.PaymentService;
@@ -65,6 +66,18 @@ public class PaymentController {
         }
 
         return "paid".equals(status)?"Payment Successful !":"Payment Failed !";
+    }
+
+    @PostMapping("/create-refund/{orderId}")
+    public ResponseEntity<PaymentDTO> createRefund(@PathVariable String orderId) throws NotFoundException, InvalidRefundException, RazorpayException {
+        Payment payment = paymentService.createRefund(orderId);
+        return new ResponseEntity<>(PaymentDTO.from(payment), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/status/refund/{refundId}")
+    public ResponseEntity<String> getRefundStatus(@PathVariable String refundId) throws RazorpayException {
+        String response = paymentService.fetchRefundStatus(refundId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

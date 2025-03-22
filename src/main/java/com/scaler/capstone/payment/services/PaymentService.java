@@ -1,11 +1,9 @@
 package com.scaler.capstone.payment.services;
 
-import com.razorpay.PaymentLink;
-import com.razorpay.RazorpayClient;
-import com.razorpay.RazorpayException;
-import com.razorpay.Utils;
+import com.razorpay.*;
 import com.scaler.capstone.payment.dtos.PaymentCallbackRequestDTO;
 import com.scaler.capstone.payment.dtos.PaymentDTO;
+import com.scaler.capstone.payment.exceptions.InvalidRefundException;
 import com.scaler.capstone.payment.exceptions.NotFoundException;
 import com.scaler.capstone.payment.models.Payment;
 import com.scaler.capstone.payment.repositories.PaymentRepository;
@@ -72,7 +70,7 @@ public class PaymentService {
                 .orElseThrow(() -> new NotFoundException("Payment not found for orderId: "+orderId));
     }
 
-    public String fetchPaymentStatus_Razorpay(String paymentId) throws RazorpayException, NotFoundException {
+    public String fetchPaymentStatus_Razorpay(String paymentId) throws RazorpayException {
         return razorpayClient.payments.fetch(paymentId).toString();
     }
 
@@ -96,6 +94,31 @@ public class PaymentService {
         payment.setPaymentId(request.getRazorpay_payment_id());
         payment.setStatus(request.getRazorpay_payment_link_status());
         paymentRepository.save(payment);
+    }
+
+    public Payment createRefund(String orderId) throws NotFoundException, RazorpayException, InvalidRefundException {
+        Payment payment = paymentRepository.findByOrderId(orderId)
+                .orElseThrow(()-> new NotFoundException("Payment not found for payment link id:" +orderId));
+
+        if(!"paid".equals(payment.getStatus())){
+            throw new InvalidRefundException("payment Not completed for the order");
+        }
+        String paymentId = payment.getPaymentId();
+        Double amount = payment.getAmount();
+
+        JSONObject refundRequest = new JSONObject();
+        refundRequest.put("amount", amount * 100); // Amount in paise
+        refundRequest.put("speed","optimum");
+
+        Refund refund = razorpayClient.payments.refund(paymentId,refundRequest);
+
+        payment.setRefundId(refund.get("id"));
+        payment.setStatus("refunded");
+        return paymentRepository.save(payment);
+    }
+
+    public String fetchRefundStatus(String refundId) throws RazorpayException {
+        return razorpayClient.refunds.fetch(refundId).toString();
     }
 
 }
