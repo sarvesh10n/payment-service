@@ -33,11 +33,11 @@ public class PaymentService {
 
     public PaymentDTO createPaymentLink(Double amount, String currency, String invoiceNumber) throws RazorpayException {
         JSONObject paymentLinkRequest = new JSONObject();
-        paymentLinkRequest.put("amount", amount*100); // Amount in paise (e.g., 1000 = ₹10)
+        paymentLinkRequest.put("amount", amount*100);
         paymentLinkRequest.put("currency", currency);
         paymentLinkRequest.put("accept_partial", false);
-        paymentLinkRequest.put("reference_id", invoiceNumber); // Unique reference ID (e.g., order ID)
-        paymentLinkRequest.put("callback_url", razorpayCallbackUrl); // Callback URL
+        paymentLinkRequest.put("reference_id", invoiceNumber);
+        paymentLinkRequest.put("callback_url", razorpayCallbackUrl);
         paymentLinkRequest.put("callback_method", "get");
 
         PaymentLink paymentLink = razorpayClient.paymentLink.create(paymentLinkRequest);
@@ -95,7 +95,7 @@ public class PaymentService {
         Double amount = payment.getAmount();
 
         JSONObject refundRequest = new JSONObject();
-        refundRequest.put("amount", amount * 100); // Amount in paise
+        refundRequest.put("amount", amount * 100);
         refundRequest.put("speed","optimum");
 
         Refund refund = razorpayClient.payments.refund(paymentId,refundRequest);
