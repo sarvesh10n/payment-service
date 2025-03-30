@@ -15,7 +15,6 @@ public class ControllerAdvices {
     @ExceptionHandler(RuntimeException.class)
     ResponseEntity<ExceptionDTO> handleRuntimeException(RuntimeException ex){
         ExceptionDTO exceptionDto = new ExceptionDTO(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-        ex.printStackTrace();
         return new ResponseEntity<>(exceptionDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -34,7 +33,6 @@ public class ControllerAdvices {
     @ExceptionHandler(RazorpayException.class)
     ResponseEntity<ExceptionDTO> handleRazorpayException(RazorpayException ex){
         ExceptionDTO exceptionDto = new ExceptionDTO(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-        ex.printStackTrace();
         return new ResponseEntity<>(exceptionDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

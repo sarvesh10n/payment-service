@@ -7,9 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PaymentDTO {
-    private String orderId; // Razorpay order ID (e.g., "order_123")
-    private String paymentId; // Razorpay payment ID (e.g., "pay_123")
-    private String refundId; //Razorpay refund ID
+    private String orderId;
+    private String paymentId;
+    private String refundId;
     private String status;
     private String paymentLink;
 

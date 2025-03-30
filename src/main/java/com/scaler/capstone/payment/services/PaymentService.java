@@ -32,16 +32,6 @@ public class PaymentService {
     }
 
     public PaymentDTO createPaymentLink(Double amount, String currency, String invoiceNumber) throws RazorpayException {
-        //We need to create checkout page to do it using order
-        //        JSONObject orderRequest = new JSONObject();
-//        orderRequest.put("amount", amount * 100); // Amount in paise
-//        orderRequest.put("currency", currency);
-//        orderRequest.put("receipt", invoiceNumber);
-//
-//        Order order = razorpayClient.orders.create(orderRequest);
-//        System.out.println("Order created: " + order.toString());
-
-        // Do it using payment link
         JSONObject paymentLinkRequest = new JSONObject();
         paymentLinkRequest.put("amount", amount*100); // Amount in paise (e.g., 1000 = ₹10)
         paymentLinkRequest.put("currency", currency);
@@ -51,9 +41,7 @@ public class PaymentService {
         paymentLinkRequest.put("callback_method", "get");
 
         PaymentLink paymentLink = razorpayClient.paymentLink.create(paymentLinkRequest);
-        System.out.println("Order created: " + paymentLink.toString());
 
-        // Save payment details to the database
         Payment payment = new Payment();
         payment.setOrderId(paymentLink.get("id"));
         payment.setAmount(amount);
